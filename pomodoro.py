@@ -7,13 +7,34 @@ import time
 from os import system
 import pyglet
 
-tasktime = 10
-breaktime = 2
-longtime = 5
+tasktime = 120
+breaktime = 30
+longtime = 60
 cycle = 0
 
+def set_breaktime(): # set short break time method
+	global breaktime
+	print ("enter new short break time: ")
+	breaktime = input()
 
-def longbreak():
+	return breaktime
+
+def set_tasktime(): # set task time method
+	global tasktime
+	print ("enter new task time: ")
+	tasktime = input()
+
+	return tasktime
+	
+
+def set_long_break_timer(): # set long break time method
+	global longtime
+
+	print ("enter new long break time: ")
+	longtime = input()
+	return longtime
+
+def longbreak():  # long break timer method
 	global longtime
 	minutes = longtime
 	print ("LONG BREAK")
@@ -27,7 +48,7 @@ def longbreak():
 	print("promodoro task done")
 
 
-def shortbreak():
+def shortbreak(): # short break timer method
 	global breaktime
 	minutes = breaktime
 	#print ("SHORT BREAK")
@@ -40,7 +61,7 @@ def shortbreak():
 		minutes -= 1
 	timer()
 
-def timer():
+def timer(): # task timer method
 	global tasktime
 	global cycle
 	minutes = tasktime
@@ -65,15 +86,21 @@ def counter():
 
 def start():
 	running = True
-	timer() #calls timer method
+	choice = input("Do you wish to configure your time: (Y/N) =>")
+	if choice == "Y":
+		set_tasktime()
+		set_breaktime()
+		set_long_break_timer()
+		timer()
+	else:
+		timer() #calls timer method
 
-def new_task():
+def new_task(): #add task and start timer method
 	# creates a new task, sets running to true and starts the timer method
-	cycle = 0
-	task_title = input("Enter Task title: ")
+	task_title = input("Enter task title: ")
 	task_date = datetime.now();
-	tasks = task_title, task_dat
+	tasks = task_title, task_date
 	print(task_title)
 	start()
-		
+
 new_task()
