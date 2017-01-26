@@ -1,23 +1,8 @@
-# bc-14-promodoroApp
-Build a Pomodoro method timer with standard time periods. 
-Each Pomodoro is a 25-minute cycle followed by a 5-minute break. 
-After the fourth Pomodoro, the user takes a 15-minute break. As a user, 
-I should be able to adjust my settings to determine how long each pomodoro takes, other than the default timings.
+# bc-14-pomodoroApp
+The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s.The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, separated by short breaks. These intervals are named pomodoros, the plural in English of the Italian word pomodoro (tomato), after the tomato-shaped kitchen timer that Cirillo used as a university student.
+this a python commandline app that emulates this
 
-The app has the following commands:
-    pomodoro start <task-title> - Starts a pomodoro timer and records the task-title and start-time/date. 
-        Play a gentle bell-ring sound (e.g. this) to signify the end of every pomodoro cycle.
-    pomodoro config time <duration-in-minutes> - Sets the duration for a pomodoro. By default, it’s 25 minutes.
-    
-    pomodoro config short_break <duration-in-minutes> - Sets the duration for the short break in between a pomodoro task. 
-        By default, it’s 5 minutes.
-    pomodoro config long_break <duration-in-minutes> - Sets the duration for the long break in between a pomodoro task.
-    
-    pomodoro config sound <off/on> - Turn off or on the sound notification.
-    
-    pomodoro stop - Marks the end end of the current running pomodoro task; and marks the task as complete.
-    
-    pomodoro list - List all the pomodoro tasks done on a particular day, and details on how many pomodoro cycles spent on each task.
-
-All data should be persisted in an SQLite database.
-
+=> The app has the default timer set to time take to finish a pomodoro is 25 minutes
+=> The app should allow the user set and configure his or her own time 
+=> The app should allow the all the user turn on or off sound of the bell
+=> print a list of previously done pomodoro tasks
