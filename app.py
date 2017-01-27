@@ -1,46 +1,56 @@
-"""
-welcome to Pomodoro Timer.
-pomodoro timer app is task managing app. it adds tasks once a task is start  each cycle by default is 25 minute wih 5 short breaks after 4 cycle a 15 minutes long break
+#!/usr/bin/env python
+# -*-coding: utf-8 -*-
 
+
+"""
+Welcome to Chonjo App.
+Chonjo is a simple Commandline Pomodoro App
 Usage:
-    app.py start <task-title>
-    app.py config time <duration in minutes>
-    app.py config short_break | long_break | sound 
+    app.py pomodoro_start <task-title>...
+    app.py pomodoro_config_time <duration-in-minutes>
+    app.py pomodoro_config_short_break <duration-in-minutes>
+    app.py pomodoro_config_long_break <duration-in-minutes>
+    app.py pomodoro_config_sound <off/on>
+    app.py pomodoro_stop
+    app.py pomodoro_list
+    app.py (-i | --interactive)
+    app.py (-h | --help)
+    app.py (-v | --version)
     app.py quit
-
-
-Arguments:
-    <task-title> unique task title
-    <duration in minutes> duration of pomodoro cyle in minute
-
-
+    quit
+Arguments
+    <task-title>            Name of the task at hand
+    <duration-in-minutes>   Duration of in minutes
+    <off/on>                The states of the sound
 Options:
-    -i, --interactive  Interactive Mode
-    -h, --help  Show this screen and exit.
-
+    -i --interactive        Interactive Mode
+    -h --help               Show this screen and exit
+    -v --version
 """
+
 import os
 import sys
-import cmd 
-import optparse
-from docopt import docopt, DocoptExit
+import cmd
+import signal
 from termcolor import cprint, colored
 from pyfiglet import figlet_format
 from docopt import docopt, DocoptExit
+
+from chonjo import ChonjoApp
+
 
 def docopt_cmd(func):
     """
     This decorator is used to simplify the try/except block and pass the result
     of the docopt parsing to the called action
     """
-
     def fn(self, args):
         try:
             opt = docopt(fn.__doc__, args)
         except DocoptExit as error:
-            #The DocoptExit is thrown when the args do not match
-            print ("The command entered is invalid")
-            print (error)
+            # The DocoptExit is thrown when the args do not match
+            print('The command entered is invalid!')
+            print(error)
             return
         except SystemExit:
             # The SystemExit exception prints the usage for --help
@@ -52,69 +62,104 @@ def docopt_cmd(func):
     fn.__dict__.update(func.__dict__)
     return fn
 
+
 def app_header():
-    
     '''
-        This function creates the header that is displayed when app
+        This function creates the header that is displayed when the app
         launches
     '''
-
-    # os.system(clear)
-    print ("\n\n")
-
-    cprint(figlet_format('Pomodoro Timer', font = 'roman'), green)
+    os.system("clear")
+    print("\n")
+    cprint(figlet_format('CHONJO', font='roman'), 'green')
     cprint('--------------------------------------------------------------------------', 'magenta')
-    cprint("A Pomodoro Timer App That tasks and counts cycles done on that task and outputs list of tasks", 'yellow')
+    cprint("\t\tChonjo is a simple Commandline Pomodoro App.", 'yellow')
     cprint('--------------------------------------------------------------------------', 'magenta')
-    cprint("\n New to the APP? Type 'help' to see a list of commands\n", white)
+    cprint("\n\tNew to the app? Type 'help' to see a full list of commands\n", 'white')
 
-def pomodoro_print(arg, color = 'green'):
 
-    ''' This is a simple print function that adds color to printe output'''
-
+def custom_print(arg, color='green'):
+    ''' This is a simple print function that adds color to printed output. '''
     cprint("\n" + arg + "\n", color)
 
-class PomodoroCLI(cmd.Cmd):
-    '''
-        This class create the Pomodoro Timer APP Command line Interface for user interaction
-    '''
 
-    pomodoro_prompt = colored('Pomodoro >')
-    prompt = pomodoro_prompt
+class ChonjoCLI(cmd.Cmd):
+    '''
+        This class creates Chonjo Command Line Interface for user interaction
+    '''
+    app_prompt = colored('Chonjo > ', 'green', attrs=['bold'])
+    prompt = app_prompt
 
     @docopt_cmd
-    def do_start_task(self, args):
+    def do_pomodoro_start(self, args):
         """
-            this commands start a tasks with a unique name on pomodoro.
-
-            The <task_title> argument specifics which task is being created and being started
-        
-        Usage: start <task_title>
-
+        Usage: pomodoro_start <task-title>...
         """
-        tasks_args = []
-
-        for task in args['task_title']:
-            tasks_args.append(task.capitalize())
-
-        pomodoro_print(pomodoro.task_title(tasks_args))
-
+        # print "\n"
+        chonjo.start(" ".join(args['<task-title>']))
 
     @docopt_cmd
-    def do_quit(self, arg):
-        """Usage: quit"""
-        print("exiting")
+    def do_pomodoro_config_time(self, args):
+        """
+        Usage: pomodoro_config_time <duration-in-minutes>
+        """
+        custom_print(chonjo.config_app(task_time=args['<duration-in-minutes>']))
+
+    @docopt_cmd
+    def do_pomodoro_config_short_break(self, args):
+        """
+        Usage: pomodoro_config_short_break <duration-in-minutes>
+        """
+        custom_print(chonjo.config_app(short_break=args['<duration-in-minutes>']))
+
+    @docopt_cmd
+    def do_pomodoro_config_long_break(self, args):
+        """
+        Usage: pomodoro_config_long_break <duration-in-minutes>
+        """
+        custom_print(chonjo.config_app(long_break=args['<duration-in-minutes>']))
+
+    @docopt_cmd
+    def do_pomodoro_config_sound(self, args):
+        """
+        Usage: pomodoro_config_sound <off/on>
+        """
+        custom_print(chonjo.config_app(sound=args['<off/on>']))
+
+    @docopt_cmd
+    def do_pomodoro_stop(self, args):
+        """
+        Usage: pomodoro_stop
+        """
+        chonjo.stop_app()
+
+    @docopt_cmd
+    def do_pomodoro_list(self, args):
+        """
+        Usage: pomodoro_list
+        """
+        chonjo.list_tasks()
+
+    def do_quit(self, args):
+        """ Quits the interactive mode """
+        print("Saving current state to DB...")
+        chonjo.stop_app()
+        chonjo.save_state()
+        print("Quiting App...")
         exit()
 
-# opt = docopt(__doc__, sys.argv[1:])
 
-if __name__ == "__main__":
-    try:
-        PomodoroCLI().cmdloop()
-    except KeyboardInterrupt:
-       print("exiting")
+opt = docopt(__doc__, sys.argv[1:])
 
-# if opt['--interactive']:
-#   app_header()
-#   #pomodoro = pomodoro()
-#   PomodoroCLI.cmdloop()
+
+def signal_handler(signal, frame):
+    print 'You pressed Ctrl+C!'
+    chonjo.stop_app()
+    print '\nChonjo > '
+    # sys.exit(0)
+
+if opt['--interactive']:
+    app_header()
+    chonjo = ChonjoApp()
+    chonjo.load_state()
+    signal.signal(signal.SIGINT, signal_handler)
+    ChonjoCLI().cmdloop()
